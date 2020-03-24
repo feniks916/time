@@ -1,0 +1,51 @@
+.section{
+    border: 1px solid rgba(121, 102, 102, 0.253);
+    width: 400px;
+    margin: 300px 300px ;
+    padding: 10px;
+}
+
+.buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    .button{
+        margin-left: 10px;
+    }
+}
+
+.timeCounter{
+    margin-left: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100px;
+    background-color: rgb(81, 78, 92);
+    span{
+        color: aqua;
+        
+    }
+}
+.activePart{
+    display: flex;
+    flex-direction: row;
+.countdown{
+    margin: 15px 55px 40px 25px;
+    display: flex;
+    flex-direction: row;
+    input{
+        width:30px;
+        margin-right: 10px;
+        text-align: center;
+    }
+}
+}
+
+.progress{
+    margin-left: 10px;
+}
+
+iframe{
+    display: none;
+}
