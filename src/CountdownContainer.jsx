@@ -1,3 +1,4 @@
+/* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable jsx-a11y/media-has-caption */
 /* eslint-disable no-plusplus */
 
@@ -5,6 +6,33 @@ import React, { useState, useRef } from 'react';
 import CountDown from './Countdown';
 
 const CountdownContainer = () => {
+  const [time, setTime] = useState({
+    min: 0,
+    sec: 0,
+  });
+
+  const handleInputChange = event => {
+    debugger;
+    setTime({
+      ...time,
+      [event.currentTarget.name]: Number(event.currentTarget.value),
+    });
+  };
+
+  const [perc, setPerc] = useState({
+    minValue: 0,
+    secValue: 0,
+  });
+  const [interv, setInterv] = useState();
+  const [keys, setKeys] = useState(0);
+
+  let updatedS = time.sec;
+  let updatedM = time.min;
+  let updateMS = 0;
+  const value = Number(perc.minValue * 60 + perc.secValue + 1);
+  const updatedValue = Number(updatedM * 60 + updatedS);
+  const percentage = Math.ceil(100 - (updatedValue * 100) / value);
+
   const myAudio = useRef();
 
   const handleBeep = () => {
@@ -13,22 +41,17 @@ const CountdownContainer = () => {
     }
     return myAudio.current.play();
   };
-  const [time, setTime] = useState({
-    sec: 1,
-    min: 1,
-    msec: 10,
-  });
-  const [interv, setInterv] = useState();
-  const [keys, setKeys] = useState(0);
 
-  let updatedS = time.sec;
-  let updatedM = time.min;
-  let updateMS = time.msec;
+  if (updatedS > 60) {
+    updatedS = 59;
+  }
+  if (updatedM > 720) {
+    updatedM = 720;
+  }
 
   const stop = () => {
     clearInterval(interv);
-    setKeys(0);
-    handleBeep();
+    setKeys(2);
   };
 
   const reset = () => {
@@ -36,8 +59,8 @@ const CountdownContainer = () => {
     setKeys(0);
     setTime({
       msec: 100,
-      sec: 10,
-      min: 0,
+      sec: 1,
+      min: 1,
     });
   };
 
@@ -45,6 +68,7 @@ const CountdownContainer = () => {
     if (updatedM === 0 && updatedS === 0) {
       updatedM = 0;
       updatedS = 0;
+      handleBeep();
       return stop();
     }
     if (updatedS === 0) {
@@ -65,14 +89,35 @@ const CountdownContainer = () => {
 
   const start = () => {
     run();
+    setPerc({
+      minValue: updatedM,
+      secValue: updatedS,
+    });
+    setKeys(1);
+    setInterv(setInterval(run, 10));
+  };
+
+  const resume = () => {
+    run();
     setKeys(1);
     setInterv(setInterval(run, 10));
   };
 
   return (
     <div>
-      <CountDown keys={keys} value={time} reset={reset} stop={stop} start={start} time={time} />
-      <audio src="https://avto-life.club/alert.ogg" ref={myAudio} crossOrigin="anonymous" preload="true" id="1" controls />
+      <CountDown
+        keys={keys}
+        minutes={updatedM}
+        seconds={updatedS}
+        reset={reset}
+        stop={stop}
+        start={start}
+        resume={resume}
+        handleInputChange={handleInputChange}
+        value={time}
+        percentage={percentage}
+      />
+      <audio src="https://avto-life.club/alert.ogg" ref={myAudio} preload="true" id="1" />
     </div>
   );
 };

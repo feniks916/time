@@ -1,33 +1,85 @@
-/* eslint-disable react/require-default-props */
 /* eslint-disable linebreak-style */
+/* eslint-disable no-plusplus */
 
-/* eslint-disable react/destructuring-assignment */
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from 'antd';
 import classes from './app.module.scss';
 
-const Timer = (props) => {
+const Timer = () => {
+  const [time, setTime] = useState({
+    msec: 0,
+    sec: 0,
+    min: 0,
+    hrs: 0,
+  });
+  const [interv, setInterv] = useState();
+  const [status, setStatus] = useState(0);
+
+  let updatedMs = time.msec;
+  let updatedS = time.sec;
+  let updatedM = time.min;
+  let updatedH = time.hrs;
+
+  const run = () => {
+    if (updatedM === 60) {
+      updatedH++;
+      updatedM = 0;
+    }
+    if (updatedS === 60) {
+      updatedM++;
+      updatedS = 0;
+    }
+    if (updatedMs === 99) {
+      updatedS++;
+      updatedMs = 0;
+    }
+    updatedMs++;
+    return setTime({
+      msec: updatedMs,
+      sec: updatedS,
+      min: updatedM,
+      hrs: updatedH,
+    });
+  };
+
+  const start = () => {
+    run();
+    setStatus(1);
+    setInterv(setInterval(run, 10));
+  };
+
+  const stop = () => {
+    clearInterval(interv);
+    setStatus(0);
+  };
+
+  const reset = () => {
+    clearInterval(interv);
+    setStatus(0);
+    setTime({
+      msec: 0, sec: 0, min: 0, hrs: 0,
+    });
+  };
   return (
     <div>
       <div className={classes.timeCounter}>
-        <span>{props.time.min >= 10 ? props.time.min : `0${props.time.min}`}</span>
+        <span>{time.min >= 10 ? time.min : `0${time.min}`}</span>
         &nbsp;:&nbsp;
-        <span>{props.time.sec >= 10 ? props.time.sec : `0${props.time.sec}`}</span>
+        <span>{time.sec >= 10 ? time.sec : `0${time.sec}`}</span>
         &nbsp;:&nbsp;
-        <span>{props.time.msec >= 10 ? props.time.msec : `0${props.time.msec}`}</span>
+        <span>{time.msec >= 10 ? time.msec : `0${time.msec}`}</span>
       </div>
       <div className={classes.buttons}>
-        {props.status === 0 ? (
-          <Button className={classes.button} onClick={props.start}>
+        {status === 0 ? (
+          <Button className={classes.button} onClick={start}>
             Запустить
           </Button>
         ) : (
-          <Button className={classes.button} onClick={props.stop}>
+          <Button className={classes.button} onClick={stop}>
             Остановить
           </Button>
         )}
-        <Button className={classes.button} onClick={props.reset}>
+        <Button className={classes.button} onClick={reset}>
           Сброс
         </Button>
       </div>
@@ -35,13 +87,5 @@ const Timer = (props) => {
   );
 };
 
-Timer.propTypes = {
-  status: PropTypes.number,
-  reset: PropTypes.func,
-  stop: PropTypes.func,
-  start: PropTypes.func,
-  // eslint-disable-next-line react/forbid-prop-types
-  time: PropTypes.object,
-};
 
 export default Timer;

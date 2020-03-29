@@ -1,50 +1,89 @@
-/* eslint-disable jsx-a11y/iframe-has-title */
-/* eslint-disable react/no-unknown-property */
-/* eslint-disable jsx-a11y/media-has-caption */
 /* eslint-disable arrow-body-style */
 /* eslint-disable react/require-default-props */
-/* eslint-disable linebreak-style */
 /* eslint-disable react/destructuring-assignment */
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Button, Progress } from 'antd';
+import { Button, Progress, Slider } from 'antd';
 import classes from './app.module.scss';
 
 const CountDown = props => {
-  console.log(props);
   return (
     <div className={classes.activePart}>
       <div>
-        <div className={classes.countdown}>
-          <input
-            type="text"
-            value={`${props.value.min}`}
-          />
-          <input
-            type="text"
-            value={`${
-              props.value.sec >= 10 ? props.value.sec : `0${props.value.sec}`
-            }`}
+        <div className={classes.silder}>
+          <Slider
+            defaultValue={props.minutes || 30}
+            onMouseUp={props.handleInputChange}
+            tooltipVisible
           />
         </div>
-        <div className={classes.buttons}>
-          {props.keys === 0 ? (
+        <div className={classes.countdown}>
+          <div className={classes.inputArea}>
+            {props.keys > 0 ? (
+              <div className={classes.span}>
+                <span className={classes.span}>
+                  {`${props.minutes >= 10 ? props.minutes : `0${props.minutes}`}` || '00'}
+                </span>
+                <span className={classes.span}>
+                  {`: ${props.seconds >= 10 ? props.seconds : `0${props.seconds}`}` || '00'}
+                </span>
+              </div>
+            ) : (
+              <div>
+                <input
+                  type="text"
+                  name="min"
+                  value={props.minutes || 0}
+                  onChange={props.handleInputChange}
+                />
+                <input
+                  type="text"
+                  name="sec"
+                  value={props.seconds || 0}
+                  onChange={props.handleInputChange}
+                />
+              </div>
+            )}
+          </div>
+          <div className={classes.progress}>
+            <Progress type="circle" percent={props.keys === 0 ? 0 : props.percentage} />
+          </div>
+        </div>
+
+        {props.keys === 0 ? (
+          <div className={classes.buttons}>
             <Button className={classes.button} onClick={props.start}>
               Запустить
             </Button>
-          ) : (
+          </div>
+        ) : (
+          ''
+        )}
+        {props.keys === 1 ? (
+          <div className={classes.buttons}>
             <Button className={classes.button} onClick={props.stop}>
               Остановить
             </Button>
-          )}
-          <Button className={classes.button} onClick={props.reset}>
-            Сброс
-          </Button>
-        </div>
-      </div>
-      <div className={classes.progress}>
-        <Progress type="circle" percent={75} />
+            <Button className={classes.button} onClick={props.reset}>
+              Сброс
+            </Button>
+          </div>
+        ) : (
+          ''
+        )}
+        {props.keys === 2 ? (
+          <div className={classes.buttons}>
+            <Button className={classes.button} onClick={props.resume}>
+              Запустить
+            </Button>
+            <Button className={classes.button} onClick={props.reset}>
+              Сброс
+            </Button>
+          </div>
+        ) : (
+          ''
+        )}
       </div>
     </div>
   );
@@ -55,7 +94,13 @@ CountDown.propTypes = {
   reset: PropTypes.func,
   stop: PropTypes.func,
   start: PropTypes.func,
-  value: PropTypes.string,
+  handleInputChange: PropTypes.func,
+  seconds: PropTypes.number,
+  minutes: PropTypes.number,
+  percentage: PropTypes.number,
+  resume: PropTypes.func,
+  handleChange: PropTypes.func,
+  sliderValue: PropTypes.number,
 };
 
 export default CountDown;
