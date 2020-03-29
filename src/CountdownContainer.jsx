@@ -10,8 +10,7 @@ const CountdownContainer = () => {
     min: 0,
     sec: 0,
   });
-  const handleInputChange = event => {
-    debugger;
+  const handleInputChange = (event) => {
     setTime({
       ...time,
       [event.currentTarget.name]: Number(event.currentTarget.value),
@@ -20,14 +19,12 @@ const CountdownContainer = () => {
   const [sliderValue, setSlider] = useState({
     min: 0,
   });
-  const handleChange = event => {
-    debugger;
+  const handleChange = (event) => {
     setSlider({
       ...sliderValue,
-      [event.currentTarget.name]: Number(event.currentTarget.value),
+      min: Number(event),
     });
   };
-  console.log(sliderMinutes);
 
   const [perc, setPerc] = useState({
     minValue: 0,
@@ -36,12 +33,19 @@ const CountdownContainer = () => {
   const [interv, setInterv] = useState();
   const [keys, setKeys] = useState(0);
   const sliderMinutes = sliderValue.min;
+
   let updatedS = time.sec;
+
   let updatedM = time.min;
+  if (sliderMinutes !== 0) {
+    time.min = Math.floor(sliderMinutes / 60);
+    time.sec = sliderMinutes - (time.min * 60);
+  }
   let updateMS = 0;
-  const value = Number(perc.minValue * 60 + perc.secValue + 1);
+
+  const valueNum = Number(perc.minValue * 60 + perc.secValue + 1);
   const updatedValue = Number(updatedM * 60 + updatedS);
-  const percentage = Math.ceil(100 - (updatedValue * 100) / value);
+  const percentage = Math.ceil(100 - (updatedValue * 100) / valueNum);
 
   const myAudio = useRef();
 
@@ -52,16 +56,22 @@ const CountdownContainer = () => {
     return myAudio.current.play();
   };
 
-  if (updatedS > 60) {
+  if (updatedS > 59) {
+    updatedM += 1;
     updatedS = 59;
   }
   if (updatedM > 720) {
-    updatedM = 720;
+    updatedM = 719;
   }
 
   const stop = () => {
     clearInterval(interv);
     setKeys(2);
+    setTime({
+      msec: updateMS,
+      sec: updatedS,
+      min: updatedM,
+    });
   };
 
   const reset = () => {
@@ -69,8 +79,8 @@ const CountdownContainer = () => {
     setKeys(0);
     setTime({
       msec: 100,
-      sec: 1,
-      min: 1,
+      sec: 0,
+      min: 0,
     });
   };
 

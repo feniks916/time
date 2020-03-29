@@ -7,18 +7,30 @@ import React from 'react';
 import { Button, Progress, Slider } from 'antd';
 import classes from './app.module.scss';
 
-const CountDown = props => {
+const CountDown = (props) => {
   return (
     <div className={classes.activePart}>
       <div>
         <div className={classes.silder}>
-          <Slider
-            max={720}
-            min={1}
-            defaultValue={props.sliderValue}
-            onChange={e => props.handleChange(e)}
-            tooltipVisible
-          />
+          {props.keys === 0 ? (
+            <Slider
+              max={3600}
+              min={0}
+              step={15}
+              name="min"
+              defaultValue={props.sliderValue}
+              onChange={props.handleChange}
+            />
+          ) : (
+            <Slider
+              max={60}
+              min={0}
+              name="min"
+              defaultValue={props.sliderValue}
+              onChange={props.handleChange}
+              disabled
+            />
+          )}
         </div>
         <div className={classes.countdown}>
           <div className={classes.inputArea}>
