@@ -10,7 +10,6 @@ const CountdownContainer = () => {
     min: 0,
     sec: 0,
   });
-
   const handleInputChange = event => {
     debugger;
     setTime({
@@ -18,6 +17,17 @@ const CountdownContainer = () => {
       [event.currentTarget.name]: Number(event.currentTarget.value),
     });
   };
+  const [sliderValue, setSlider] = useState({
+    min: 0,
+  });
+  const handleChange = event => {
+    debugger;
+    setSlider({
+      ...sliderValue,
+      [event.currentTarget.name]: Number(event.currentTarget.value),
+    });
+  };
+  console.log(sliderMinutes);
 
   const [perc, setPerc] = useState({
     minValue: 0,
@@ -25,7 +35,7 @@ const CountdownContainer = () => {
   });
   const [interv, setInterv] = useState();
   const [keys, setKeys] = useState(0);
-
+  const sliderMinutes = sliderValue.min;
   let updatedS = time.sec;
   let updatedM = time.min;
   let updateMS = 0;
@@ -116,6 +126,8 @@ const CountdownContainer = () => {
         handleInputChange={handleInputChange}
         value={time}
         percentage={percentage}
+        handleChange={handleChange}
+        sliderValue={sliderMinutes}
       />
       <audio src="https://avto-life.club/alert.ogg" ref={myAudio} preload="true" id="1" />
     </div>

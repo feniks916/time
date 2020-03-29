@@ -13,8 +13,10 @@ const CountDown = props => {
       <div>
         <div className={classes.silder}>
           <Slider
-            defaultValue={props.minutes || 30}
-            onMouseUp={props.handleInputChange}
+            max={720}
+            min={1}
+            defaultValue={props.sliderValue}
+            onChange={e => props.handleChange(e)}
             tooltipVisible
           />
         </div>
