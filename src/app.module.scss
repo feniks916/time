@@ -1,6 +1,7 @@
 .section{
     border: 1px solid rgba(121, 102, 102, 0.253);
-    width: 400px;
+    min-width: 400px;
+    max-width: 500px;
     margin: 300px 300px ;
     padding: 10px;
 }
@@ -33,26 +34,28 @@
 .countdown{
     min-width:200px;
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-self: auto;
     input{
         width:40px;
         height: 40px;
         margin-right: 10px;
         text-align: center;
-        margin-top: 40px;
+        margin-top: 10px;
         font-size: 20px;
     }
     .inputArea{
-       margin-right: 100px; 
        margin-left: 30px;
        .span{
         font-size: 30px;
         padding-top: 30px;
+        width: 200px;
     }
     }
 }
+}
+
+.inputs{
+    display: flex;
+    flex-direction: row;
 }
 
 .slider{

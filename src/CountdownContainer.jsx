@@ -1,16 +1,19 @@
+/* eslint-disable arrow-parens */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable jsx-a11y/media-has-caption */
 /* eslint-disable no-plusplus */
 
 import React, { useState, useRef } from 'react';
+import { Progress, Button } from 'antd';
 import CountDown from './Countdown';
+import classes from './app.module.scss';
 
 const CountdownContainer = () => {
   const [time, setTime] = useState({
     min: 0,
     sec: 0,
   });
-  const handleInputChange = (event) => {
+  const handleInputChange = event => {
     setTime({
       ...time,
       [event.currentTarget.name]: Number(event.currentTarget.value),
@@ -19,11 +22,20 @@ const CountdownContainer = () => {
   const [sliderValue, setSlider] = useState({
     min: 0,
   });
-  const handleChange = (event) => {
+
+  const handleChange = event => {
     setSlider({
       ...sliderValue,
       min: Number(event),
     });
+    if (event === 3600) {
+      time.min = 60;
+      time.sec = 0;
+    }
+    if (event === 0) {
+      time.min = 0;
+      time.sec = 0;
+    }
   };
 
   const [perc, setPerc] = useState({
@@ -39,7 +51,7 @@ const CountdownContainer = () => {
   let updatedM = time.min;
   if (sliderMinutes !== 0) {
     time.min = Math.floor(sliderMinutes / 60);
-    time.sec = sliderMinutes - (time.min * 60);
+    time.sec = sliderMinutes - time.min * 60;
   }
   let updateMS = 0;
 
@@ -125,20 +137,72 @@ const CountdownContainer = () => {
 
   return (
     <div>
-      <CountDown
-        keys={keys}
-        minutes={updatedM}
-        seconds={updatedS}
-        reset={reset}
-        stop={stop}
-        start={start}
-        resume={resume}
-        handleInputChange={handleInputChange}
-        value={time}
-        percentage={percentage}
-        handleChange={handleChange}
-        sliderValue={sliderMinutes}
-      />
+      <div className={classes.activePart}>
+        <div>
+          <div className={classes.countdown}>
+            <div className={classes.inputArea}>
+              {keys > 0 ? (
+                <div className={classes.span}>
+                  <span className={classes.span}>
+                    {`${updatedM >= 10 ? updatedM : `0${updatedM}`}` || '00'}
+                  </span>
+                  <span className={classes.span}>
+                    {`: ${updatedS >= 10 ? updatedS : `0${updatedS}`}` || '00'}
+                  </span>
+                </div>
+              ) : (
+                <CountDown
+                  keys={keys}
+                  minutes={updatedM}
+                  seconds={updatedS}
+                  handleInputChange={handleInputChange}
+                  value={time}
+                  handleChange={handleChange}
+                  sliderValue={sliderMinutes}
+                />
+              )}
+            </div>
+            <div className={classes.progress}>
+              <Progress type="circle" percent={keys === 0 ? 0 : percentage} />
+            </div>
+          </div>
+
+          {keys === 0 ? (
+            <div className={classes.buttons}>
+              <Button className={classes.button} onClick={start}>
+                Запустить
+              </Button>
+            </div>
+          ) : (
+            ''
+          )}
+          {keys === 1 ? (
+            <div className={classes.buttons}>
+              <Button className={classes.button} onClick={stop}>
+                Остановить
+              </Button>
+              <Button className={classes.button} onClick={reset}>
+                Сброс
+              </Button>
+            </div>
+          ) : (
+            ''
+          )}
+          {keys === 2 ? (
+            <div className={classes.buttons}>
+              <Button className={classes.button} onClick={resume}>
+                Запустить
+              </Button>
+              <Button className={classes.button} onClick={reset}>
+                Сброс
+              </Button>
+            </div>
+          ) : (
+            ''
+          )}
+        </div>
+      </div>
+
       <audio src="https://avto-life.club/alert.ogg" ref={myAudio} preload="true" id="1" />
     </div>
   );
