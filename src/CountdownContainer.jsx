@@ -9,6 +9,12 @@ import CountDown from './Countdown';
 import classes from './app.module.scss';
 
 const CountdownContainer = () => {
+  const statuses = {
+    PAUSE: 'PAUSE',
+    START: 'START',
+    RESET: 'RESET',
+    RESUME: 'RESUME',
+  };
   const [time, setTime] = useState({
     min: 0,
     sec: 0,
@@ -43,7 +49,7 @@ const CountdownContainer = () => {
     secValue: 0,
   });
   const [interv, setInterv] = useState();
-  const [keys, setKeys] = useState(0);
+  const [keys, setKeys] = useState(statuses.START);
   const sliderMinutes = sliderValue.min;
 
   let updatedS = time.sec;
@@ -78,7 +84,7 @@ const CountdownContainer = () => {
 
   const stop = () => {
     clearInterval(interv);
-    setKeys(2);
+    setKeys(statuses.RESUME);
     setTime({
       msec: updateMS,
       sec: updatedS,
@@ -88,7 +94,7 @@ const CountdownContainer = () => {
 
   const reset = () => {
     clearInterval(interv);
-    setKeys(0);
+    setKeys(statuses.START);
     setTime({
       msec: 100,
       sec: 0,
@@ -125,13 +131,13 @@ const CountdownContainer = () => {
       minValue: updatedM,
       secValue: updatedS,
     });
-    setKeys(1);
+    setKeys(statuses.PAUSE);
     setInterv(setInterval(run, 10));
   };
 
   const resume = () => {
     run();
-    setKeys(1);
+    setKeys(statuses.PAUSE);
     setInterv(setInterval(run, 10));
   };
 
@@ -141,7 +147,7 @@ const CountdownContainer = () => {
         <div>
           <div className={classes.countdown}>
             <div className={classes.inputArea}>
-              {keys > 0 ? (
+              {keys !== 'START' ? (
                 <div className={classes.span}>
                   <span className={classes.span}>
                     {`${updatedM >= 10 ? updatedM : `0${updatedM}`}` || '00'}
@@ -163,11 +169,11 @@ const CountdownContainer = () => {
               )}
             </div>
             <div className={classes.progress}>
-              <Progress type="circle" percent={keys === 0 ? 0 : percentage} />
+              <Progress type="circle" percent={keys === 'START' ? 0 : percentage} />
             </div>
           </div>
 
-          {keys === 0 ? (
+          {keys === 'START' ? (
             <div className={classes.buttons}>
               <Button className={classes.button} onClick={start}>
                 Запустить
@@ -176,7 +182,7 @@ const CountdownContainer = () => {
           ) : (
             ''
           )}
-          {keys === 1 ? (
+          {keys === 'PAUSE' ? (
             <div className={classes.buttons}>
               <Button className={classes.button} onClick={stop}>
                 Остановить
@@ -188,7 +194,7 @@ const CountdownContainer = () => {
           ) : (
             ''
           )}
-          {keys === 2 ? (
+          {keys === 'RESUME' ? (
             <div className={classes.buttons}>
               <Button className={classes.button} onClick={resume}>
                 Запустить

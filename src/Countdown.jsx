@@ -12,7 +12,7 @@ const CountDown = (props) => {
     <div className={classes.activePart}>
       <div>
         <div className={classes.silder}>
-          {props.keys === 0 ? (
+          {props.keys === 'START' ? (
             <Slider
               max={3600}
               min={0}
