@@ -18,7 +18,7 @@ const CountDown = (props) => {
               min={0}
               step={15}
               name="min"
-              defaultValue={props.sliderValue}
+              value={props.sliderValue * 60 > 3600 ? 3600 : props.sliderValue * 60}
               onChange={props.handleChange}
             />
           ) : (
@@ -56,7 +56,7 @@ const CountDown = (props) => {
 };
 
 CountDown.propTypes = {
-  keys: PropTypes.number,
+  keys: PropTypes.string,
   handleInputChange: PropTypes.func,
   seconds: PropTypes.number,
   minutes: PropTypes.number,

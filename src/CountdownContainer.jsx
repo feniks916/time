@@ -15,34 +15,42 @@ const CountdownContainer = () => {
     RESET: 'RESET',
     RESUME: 'RESUME',
   };
+
   const [time, setTime] = useState({
     min: 0,
     sec: 0,
   });
+  const sliderMinutes = time.min;
   const handleInputChange = event => {
-    setTime({
-      ...time,
-      [event.currentTarget.name]: Number(event.currentTarget.value),
-    });
+    if (typeof event === 'object') {
+      setTime({
+        ...time,
+        [event.currentTarget.name]: Number(event.currentTarget.value),
+      });
+    }
   };
-  const [sliderValue, setSlider] = useState({
-    min: 0,
-  });
 
   const handleChange = event => {
-    setSlider({
-      ...sliderValue,
-      min: Number(event),
+    setTime({
+      ...time,
+      min: Math.floor(event / 60),
+      sec: event - time.min * 60,
     });
-    if (event === 3600) {
-      time.min = 60;
-      time.sec = 0;
-    }
     if (event === 0) {
       time.min = 0;
       time.sec = 0;
     }
   };
+
+  if (time.sec > 59) {
+    time.sec = 0;
+  }
+  if (time.sec < 0) {
+    time.sec = 0;
+  }
+  if (time.min > 720) {
+    time.min = 720;
+  }
 
   const [perc, setPerc] = useState({
     minValue: 0,
@@ -50,19 +58,11 @@ const CountdownContainer = () => {
   });
   const [interv, setInterv] = useState();
   const [keys, setKeys] = useState(statuses.START);
-  const sliderMinutes = sliderValue.min;
 
-  let updatedS = time.sec;
-
-  let updatedM = time.min;
-  if (sliderMinutes !== 0) {
-    time.min = Math.floor(sliderMinutes / 60);
-    time.sec = sliderMinutes - time.min * 60;
-  }
-  let updateMS = 0;
+  let updateMS = 100;
 
   const valueNum = Number(perc.minValue * 60 + perc.secValue + 1);
-  const updatedValue = Number(updatedM * 60 + updatedS);
+  const updatedValue = Number(time.min * 60 + time.sec);
   const percentage = Math.ceil(100 - (updatedValue * 100) / valueNum);
 
   const myAudio = useRef();
@@ -74,21 +74,13 @@ const CountdownContainer = () => {
     return myAudio.current.play();
   };
 
-  if (updatedS > 59) {
-    updatedM += 1;
-    updatedS = 59;
-  }
-  if (updatedM > 720) {
-    updatedM = 719;
-  }
-
   const stop = () => {
     clearInterval(interv);
     setKeys(statuses.RESUME);
     setTime({
       msec: updateMS,
-      sec: updatedS,
-      min: updatedM,
+      sec: time.sec,
+      min: time.min,
     });
   };
 
@@ -103,33 +95,33 @@ const CountdownContainer = () => {
   };
 
   const run = () => {
-    if (updatedM === 0 && updatedS === 0) {
-      updatedM = 0;
-      updatedS = 0;
+    if (time.min === 0 && time.sec === 0) {
+      time.min = 0;
+      time.sec = 0;
       handleBeep();
       return stop();
     }
-    if (updatedS === 0) {
-      updatedM--;
-      updatedS = 59;
+    if (time.sec === 0) {
+      time.min--;
+      time.sec = 59;
     }
     if (updateMS === 0) {
-      updatedS--;
+      time.sec--;
       updateMS = 99;
     }
     updateMS--;
     return setTime({
       msec: updateMS,
-      sec: updatedS,
-      min: updatedM,
+      sec: time.sec,
+      min: time.min,
     });
   };
 
   const start = () => {
     run();
     setPerc({
-      minValue: updatedM,
-      secValue: updatedS,
+      minValue: time.min,
+      secValue: time.sec,
     });
     setKeys(statuses.PAUSE);
     setInterv(setInterval(run, 10));
@@ -150,20 +142,20 @@ const CountdownContainer = () => {
               {keys !== 'START' ? (
                 <div className={classes.span}>
                   <span className={classes.span}>
-                    {`${updatedM >= 10 ? updatedM : `0${updatedM}`}` || '00'}
+                    {`${time.min >= 10 ? time.min : `0${time.min}`}` || '00'}
                   </span>
                   <span className={classes.span}>
-                    {`: ${updatedS >= 10 ? updatedS : `0${updatedS}`}` || '00'}
+                    {`: ${time.sec >= 10 ? time.sec : `0${time.sec}`}` || '00'}
                   </span>
                 </div>
               ) : (
                 <CountDown
                   keys={keys}
-                  minutes={updatedM}
-                  seconds={updatedS}
+                  minutes={time.min}
+                  seconds={time.sec}
                   handleInputChange={handleInputChange}
-                  value={time}
                   handleChange={handleChange}
+                  value={time}
                   sliderValue={sliderMinutes}
                 />
               )}
