@@ -1,0 +1,15 @@
+.section{
+    border: 1px solid rgba(121, 102, 102, 0.253);
+    width: 400px;
+    margin: 300px 300px ;
+    padding: 10px;
+}
+
+.buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    .button{
+        margin-left: 10px;
+    }
+}

@@ -20,14 +20,13 @@ const CountdownContainer = () => {
     min: 0,
     sec: 0,
   });
+
   const sliderMinutes = time.min;
   const handleInputChange = event => {
-    if (typeof event === 'object') {
-      setTime({
-        ...time,
-        [event.currentTarget.name]: Number(event.currentTarget.value),
-      });
-    }
+    setTime({
+      ...time,
+      [event.currentTarget.name]: Number(event.currentTarget.value),
+    });
   };
 
   const handleChange = event => {
@@ -36,21 +35,7 @@ const CountdownContainer = () => {
       min: Math.floor(event / 60),
       sec: event - time.min * 60,
     });
-    if (event === 0) {
-      time.min = 0;
-      time.sec = 0;
-    }
   };
-
-  if (time.sec > 59) {
-    time.sec = 0;
-  }
-  if (time.sec < 0) {
-    time.sec = 0;
-  }
-  if (time.min > 720) {
-    time.min = 720;
-  }
 
   const [perc, setPerc] = useState({
     minValue: 0,
@@ -59,7 +44,25 @@ const CountdownContainer = () => {
   const [interv, setInterv] = useState();
   const [keys, setKeys] = useState(statuses.START);
 
-  let updateMS = 100;
+  if (time.sec > 59) {
+    setTime({
+      ...time,
+      sec: 0,
+    });
+  }
+
+  if (time.sec < 0) {
+    setTime({
+      ...time,
+      sec: 0,
+    });
+  }
+  if (time.min > 720) {
+    setTime({
+      ...time,
+      min: 720,
+    });
+  }
 
   const valueNum = Number(perc.minValue * 60 + perc.secValue + 1);
   const updatedValue = Number(time.min * 60 + time.sec);
@@ -74,13 +77,17 @@ const CountdownContainer = () => {
     return myAudio.current.play();
   };
 
+  let updateMS = 100;
+  let updatedSec = time.sec;
+  let updatedMin = time.min;
+
   const stop = () => {
     clearInterval(interv);
     setKeys(statuses.RESUME);
     setTime({
       msec: updateMS,
-      sec: time.sec,
-      min: time.min,
+      sec: updatedSec,
+      min: updatedMin,
     });
   };
 
@@ -95,25 +102,27 @@ const CountdownContainer = () => {
   };
 
   const run = () => {
-    if (time.min === 0 && time.sec === 0) {
-      time.min = 0;
-      time.sec = 0;
+    if (updatedMin === 0 && updatedSec === 0) {
+      updatedMin = 0;
+      updatedSec = 0;
       handleBeep();
       return stop();
     }
-    if (time.sec === 0) {
-      time.min--;
-      time.sec = 59;
+    if (updatedSec === 0 && updateMS === 0) {
+      updatedMin--;
+      updateMS = 99;
+      updatedSec = 59;
     }
     if (updateMS === 0) {
-      time.sec--;
+      updatedSec--;
       updateMS = 99;
     }
     updateMS--;
+
     return setTime({
       msec: updateMS,
-      sec: time.sec,
-      min: time.min,
+      sec: updatedSec,
+      min: updatedMin,
     });
   };
 
@@ -164,40 +173,36 @@ const CountdownContainer = () => {
               <Progress type="circle" percent={keys === 'START' ? 0 : percentage} />
             </div>
           </div>
-
-          {keys === 'START' ? (
-            <div className={classes.buttons}>
+          <div className={classes.buttons}>
+            {keys === 'START' ? (
               <Button className={classes.button} onClick={start}>
                 Запустить
               </Button>
-            </div>
-          ) : (
-            ''
-          )}
-          {keys === 'PAUSE' ? (
-            <div className={classes.buttons}>
+            ) : (
+              ''
+            )}
+            {keys === 'PAUSE' ? (
               <Button className={classes.button} onClick={stop}>
                 Остановить
               </Button>
-              <Button className={classes.button} onClick={reset}>
-                Сброс
-              </Button>
-            </div>
-          ) : (
-            ''
-          )}
-          {keys === 'RESUME' ? (
-            <div className={classes.buttons}>
+            ) : (
+              ''
+            )}
+            {keys === 'RESUME' ? (
               <Button className={classes.button} onClick={resume}>
-                Запустить
+                Продолжить
               </Button>
+            ) : (
+              ''
+            )}
+            {keys !== 'START' ? (
               <Button className={classes.button} onClick={reset}>
                 Сброс
               </Button>
-            </div>
-          ) : (
-            ''
-          )}
+            ) : (
+              ''
+            )}
+          </div>
         </div>
       </div>
 
